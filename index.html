@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="theme-color" content="#0757a6" />
+<title>AquaRescue | Turbidity & Treatment Dashboard</title>
+<style>
+  :root{--navy:#073b75;--blue:#0878d1;--sky:#eaf5ff;--ink:#132e4b;--muted:#60758b;--line:#d7e7f6;--green:#18884b;--amber:#a96a00;--red:#c93636;--white:#fff;}
+  *{box-sizing:border-box}body{margin:0;background:#f3f8fd;color:var(--ink);font-family:Inter,Segoe UI,Arial,sans-serif;line-height:1.5}
+  header{background:linear-gradient(115deg,#063d7a,#0877bf);color:white;padding:18px clamp(16px,4vw,54px);display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap}
+  .brand{display:flex;align-items:center;gap:13px}.logo{width:48px;height:48px;border-radius:15px;background:#fff;color:#0674c8;display:grid;place-items:center;font-size:28px;font-weight:800}.brand h1{font-size:clamp(22px,3vw,30px);margin:0;letter-spacing:-.5px}.brand p{margin:1px 0 0;color:#dcefff;font-size:13px}.topnote{font-size:13px;color:#e5f4ff}
+  main{max-width:1440px;margin:26px auto;padding:0 20px 34px}.intro{margin-bottom:20px;display:flex;justify-content:space-between;align-items:end;gap:14px;flex-wrap:wrap}.eyebrow{font-size:12px;letter-spacing:1.4px;font-weight:800;color:var(--blue);text-transform:uppercase}.intro h2{font-size:clamp(24px,3vw,34px);margin:5px 0 3px;letter-spacing:-.7px}.intro p{margin:0;color:var(--muted)}
+  .grid{display:grid;grid-template-columns:minmax(0,1.45fr) minmax(330px,1fr);gap:18px;align-items:stretch}.card{background:white;border:1px solid var(--line);border-radius:17px;box-shadow:0 7px 24px #16466b0c;padding:20px;min-width:0}.cardhead{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:14px}.cardhead h3{font-size:18px;margin:0}.smallmuted{font-size:12px;color:var(--muted)}.online{white-space:nowrap;border-radius:99px;padding:6px 10px;font-size:12px;font-weight:700;color:#6c7f8f;background:#f0f4f7}.online:before{content:'';display:inline-block;width:7px;height:7px;border-radius:50%;background:#94a3b1;margin-right:7px}.online.active{color:var(--green);background:#e9f9ef}.online.active:before{background:#21a75c}
+  .arena-wrap{position:relative;border-radius:13px;overflow:hidden;background:#d8e9f6;min-height:280px}.arena-wrap img{display:block;width:100%;height:clamp(280px,34vw,440px);object-fit:cover}.arena-overlay{position:absolute;left:14px;bottom:14px;background:#062f5de8;color:white;padding:10px 13px;border-radius:10px;font-size:12px;max-width:calc(100% - 28px)}.arena-overlay strong{display:block;font-size:13px}.arena-overlay span{color:#cee8ff}.arena-footer{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-top:13px;color:var(--muted);font-size:12px}.tag{background:var(--sky);color:#075ea8;padding:5px 9px;border-radius:7px;font-weight:700}
+  .reading-panel{background:linear-gradient(145deg,#e8f5ff,#f8fcff);border:1px solid #c8e5ff;border-radius:14px;padding:19px}.readtop{display:flex;justify-content:space-between;align-items:center;gap:10px}.readlabel{font-size:13px;font-weight:700;color:#42627f}.ntuline{display:flex;align-items:baseline;gap:8px;margin-top:3px}.ntuvalue{font-size:clamp(42px,5vw,56px);font-weight:800;color:#07569b;letter-spacing:-2px;line-height:1.1;overflow-wrap:anywhere}.ntuunits{font-size:14px;color:#456782;font-weight:700}.pill{border-radius:99px;padding:7px 11px;font-size:12px;font-weight:800;white-space:nowrap;background:#edf2f7;color:#566b7e}.pill.low{background:#dff7e8;color:#14733d}.pill.mid{background:#fff0c8;color:#8d5b00}.pill.high{background:#ffe0e0;color:#b42323}
+  .scale{display:grid;grid-template-columns:1fr 1fr 1fr;gap:4px;margin:18px 0 5px}.scale div{height:9px;border-radius:99px;background:#dce7ef}.scale .s-low{background:#31ad63}.scale .s-mid{background:#f0b92e}.scale .s-high{background:#e44d4d}.scale-labels{display:grid;grid-template-columns:1fr 1fr 1fr;text-align:center;font-size:11px;color:var(--muted)}
+  .result-head{display:flex;align-items:center;gap:10px;margin:19px 0 8px}.result-icon{width:37px;height:37px;border-radius:11px;background:#e4f3ff;display:grid;place-items:center;font-size:20px}.result-head h4{margin:0;font-size:17px}.verdict{font-size:20px;font-weight:800;margin:3px 0 4px}.result-copy{font-size:13px;color:#48647c;margin:0}.solution{margin-top:16px;border:1px solid var(--line);border-radius:12px;padding:15px;background:#fbfdff}.solution h4{margin:0 0 7px;font-size:15px;color:#075ca4}.solution ol{margin:0;padding-left:20px;font-size:13px;color:#38566f}.solution li{padding:3px 0 3px 3px}.warning{margin-top:12px;padding:11px 12px;border-radius:10px;background:#fff5df;color:#765116;font-size:12px;line-height:1.5;border:1px solid #f4dfb5}.warning strong{color:#684400}
+  .lower{display:grid;grid-template-columns:minmax(280px,1fr) minmax(280px,1fr);gap:18px;margin-top:18px}.inputrow{display:flex;gap:10px;margin-top:12px}.inputrow input{min-width:0;flex:1}.inputrow input,select{width:100%;border:1px solid #c9dbea;border-radius:10px;background:white;padding:12px 13px;color:var(--ink);font:inherit;outline:none}.inputrow input:focus,select:focus{border-color:#1185d6;box-shadow:0 0 0 3px #1185d61c}.btn{border:0;border-radius:10px;padding:11px 15px;font:inherit;font-weight:750;cursor:pointer;transition:transform .15s,background .15s}.btn:active{transform:scale(.98)}.btn-primary{background:#0877d1;color:white}.btn-primary:hover{background:#0565b4}.btn-light{background:#e8f4ff;color:#075da7}.btn-light:hover{background:#d7ecff}.buttons{display:flex;gap:9px;flex-wrap:wrap;margin-top:12px}.formhint{font-size:12px;color:var(--muted);margin:8px 0 0}.quick{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}.quick button{font-size:12px;padding:7px 10px}.history{width:100%;border-collapse:collapse;font-size:12px}.history th,.history td{text-align:left;padding:10px 7px;border-bottom:1px solid #e7eff6}.history th{color:#587087;font-weight:700;background:#f6faff}.history tr:last-child td{border-bottom:0}.empty{font-size:13px;color:var(--muted);padding:12px 0}.footnote{font-size:12px;color:var(--muted);margin:19px 2px 0}.footer{background:#e7f2fc;padding:18px;text-align:center;color:#587087;font-size:12px}
+  @media(max-width:900px){.grid{grid-template-columns:1fr}.arena-wrap img{height:clamp(260px,55vw,430px)}.lower{grid-template-columns:1fr}}
+  @media(max-width:520px){main{padding:0 12px 24px;margin-top:18px}.card{padding:15px}.brand p{font-size:11px}.topnote{display:none}.reading-panel{padding:14px}.readtop{align-items:flex-start;flex-direction:column}.inputrow{flex-direction:column}.inputrow .btn{width:100%}.ntuvalue{font-size:43px}.arena-wrap img{height:270px}}
+</style>
+</head>
+<body>
+<header>
+  <div class="brand"><div class="logo">💧</div><div><h1>AquaRescue</h1><p>SDG 6 · Clean Water & Sanitation</p></div></div>
+  <div class="topnote">Turbidity Monitor <span aria-hidden="true">　|　</span> Filter · Retest · Disinfect</div>
+</header>
+<main>
+  <section class="intro">
+    <div><div class="eyebrow">Water testing dashboard</div><h2>Find out how cloudy your water is.</h2><p>Enter a turbidity reading or connect the Arduino to get a recommended next step.</p></div>
+  </section>
+
+  <div class="grid">
+    <section class="card">
+      <div class="cardhead"><h3>🤖 Robot Arena</h3><span class="online" id="robotStatus">Demo view</span></div>
+      <div class="arena-wrap">
+        <img src="assets/robot-arena.png" alt="AquaRescue prototype rover beside a water testing tank and a layered filter column" />
+        <div class="arena-overlay"><strong>AquaRescue test station</strong><span>Robot prototype · water sample · filter demonstration</span></div>
+      </div>
+      <div class="arena-footer"><span>Illustrative project view — not a live camera feed</span><span class="tag">SDG 6 · Clean Water</span></div>
+    </section>
+
+    <section class="card" aria-live="polite">
+      <div class="cardhead"><h3>💧 Water Result</h3><span class="smallmuted">Turbidity only</span></div>
+      <div class="reading-panel">
+        <div class="readtop"><div><div class="readlabel">Measured turbidity</div><div class="ntuline"><span class="ntuvalue" id="ntuValue">—</span><span class="ntuunits">NTU</span></div></div><span class="pill" id="levelPill">Waiting for reading</span></div>
+        <div class="scale" aria-label="Turbidity scale"><div class="s-low"></div><div class="s-mid"></div><div class="s-high"></div></div>
+        <div class="scale-labels"><span>0–&lt;1<br>Low</span><span>1–5<br>Elevated</span><span>&gt;5<br>High</span></div>
+      </div>
+      <div class="result-head"><div class="result-icon" id="verdictIcon">🔬</div><div><h4>Assessment</h4><div class="verdict" id="verdict">Waiting for a reading</div></div></div>
+      <p class="result-copy" id="explanation">Provide a turbidity reading to classify the sample and show a preferred treatment approach.</p>
+      <div class="solution"><h4>✅ Preferred solution</h4><ol id="solutionSteps"><li>Enter a turbidity value or connect the Arduino.</li><li>AquaRescue will recommend a next step.</li></ol></div>
+      <div class="warning"><strong>Safety note:</strong> Turbidity measures cloudiness, not germs or toxic chemicals. Even low-turbidity water is not automatically safe to drink. Do not calculate a chlorine dose from turbidity alone; follow the product label and local public-health guidance.</div>
+    </section>
+  </div>
+
+  <div class="lower">
+    <section class="card">
+      <div class="cardhead"><h3>🎛️ Test a Water Sample</h3><span class="smallmuted">Manual or Arduino</span></div>
+      <label for="ntuInput" style="font-size:13px;font-weight:750">Turbidity reading (NTU)</label>
+      <div class="inputrow"><input id="ntuInput" type="number" min="0" step="0.1" placeholder="e.g. 6.4" inputmode="decimal" /><button class="btn btn-primary" id="checkBtn">Check water</button></div>
+      <div class="quick"><button class="btn btn-light" data-demo="0.6">Demo: 0.6 NTU</button><button class="btn btn-light" data-demo="3.2">Demo: 3.2 NTU</button><button class="btn btn-light" data-demo="8.5">Demo: 8.5 NTU</button></div>
+      <div class="buttons"><button class="btn btn-primary" id="connectBtn">Connect Arduino</button><button class="btn btn-light" id="clearBtn">Clear reading</button></div>
+      <p class="formhint" id="connectionStatus">Arduino not connected. Demo buttons use example readings, not actual sensor data.</p>
+    </section>
+    <section class="card">
+      <div class="cardhead"><h3>📋 Recent Tests</h3><span class="smallmuted" id="historyCount">0 tests</span></div>
+      <div id="historyEmpty" class="empty">No readings yet. Enter a value or try a demo reading.</div>
+      <div style="overflow-x:auto"><table class="history" id="historyTable" hidden><thead><tr><th>Time</th><th>NTU</th><th>Assessment</th></tr></thead><tbody id="historyBody"></tbody></table></div>
+    </section>
+  </div>
+  <p class="footnote">Guidance basis: WHO guidance targets turbidity below 1 NTU for effective disinfection where achievable; if not achievable, aim below 5 NTU and still disinfect. A turbidity reading by itself cannot certify drinking-water safety.</p>
+</main>
+<div class="footer">AquaRescue · Student robotics project · SDG 6: Clean Water and Sanitation</div>
+
+<script>
+(() => {
+  const $ = id => document.getElementById(id);
+  const historyItems = [];
+  let serialPort = null;
+  let keepReading = false;
+
+  function getAssessment(ntu) {
+    if (ntu < 1) return {
+      level: 'Low turbidity', pill: 'low', verdict: 'Looks clear · low turbidity', icon: '💧',
+      explanation: 'The sample has low measured cloudiness. This is a good clarity result, but turbidity alone cannot confirm that the water is microbiologically safe.',
+      steps: [
+        'Retest to confirm the reading is stable and the sensor is calibrated.',
+        'If the water is intended for drinking, disinfect it using an approved method and follow the exact product instructions.',
+        'Use an approved test or local water authority guidance to confirm safety.'
+      ]
+    };
+    if (ntu <= 5) return {
+      level: 'Elevated turbidity', pill: 'mid', verdict: 'Slightly cloudy · treat first', icon: '🟡',
+      explanation: 'Particles may reduce the effectiveness of disinfection. Clarify the water before disinfecting it.',
+      steps: [
+        'Let the sample settle, then carefully pour off the clearer water.',
+        'Pass it through a suitable filter to remove more suspended particles.',
+        'Measure turbidity again; aim for below 1 NTU where achievable, and below 5 NTU if that target cannot be reached.',
+        'Disinfect using approved instructions. Do not guess a chlorine dose from NTU alone.'
+      ]
+    };
+    return {
+      level: 'High turbidity', pill: 'high', verdict: 'Cloudy / dirty-looking · treat first', icon: '🔴',
+      explanation: 'The sample is highly cloudy. Do not treat this reading as drinking-water clearance; remove suspended particles and retest before disinfection.',
+      steps: [
+        'Allow the water to settle; draw the clearer water off without disturbing the sediment.',
+        'Filter it through a suitable filter. A prototype sand/gravel/activated-carbon filter can demonstrate particle reduction, but it does not guarantee removal of germs.',
+        'Retest the filtered water and repeat clarification if needed; aim for below 1 NTU where achievable.',
+        'Disinfect with an approved method and follow the product label and local public-health guidance.'
+      ]
+    };
+  }
+
+  function recordReading(ntu, source = 'Manual') {
+    if (!Number.isFinite(ntu) || ntu < 0) {
+      alert('Enter a valid turbidity value of 0 or higher.');
+      return;
+    }
+    const a = getAssessment(ntu);
+    $('ntuValue').textContent = ntu.toFixed(1);
+    $('levelPill').textContent = a.level;
+    $('levelPill').className = 'pill ' + a.pill;
+    $('verdictIcon').textContent = a.icon;
+    $('verdict').textContent = a.verdict;
+    $('explanation').textContent = a.explanation;
+    $('solutionSteps').innerHTML = a.steps.map(step => '<li>' + escapeHtml(step) + '</li>').join('');
+    $('ntuInput').value = ntu;
+    historyItems.unshift({time: new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit', second:'2-digit'}), ntu: ntu.toFixed(1), level: a.level, pill: a.pill, source});
+    historyItems.splice(8);
+    renderHistory();
+  }
+
+  function escapeHtml(s) { return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+  function renderHistory() {
+    $('historyCount').textContent = historyItems.length + (historyItems.length === 1 ? ' test' : ' tests');
+    $('historyEmpty').hidden = historyItems.length > 0;
+    $('historyTable').hidden = historyItems.length === 0;
+    $('historyBody').innerHTML = historyItems.map(i => `<tr><td>${escapeHtml(i.time)}</td><td>${i.ntu}</td><td><span class="pill ${i.pill}">${escapeHtml(i.level)}</span></td></tr>`).join('');
+  }
+
+  $('checkBtn').addEventListener('click', () => {
+    const raw = $('ntuInput').value.trim();
+    if (raw === '') { alert('Enter the turbidity reading in NTU.'); return; }
+    recordReading(Number(raw));
+  });
+  $('ntuInput').addEventListener('keydown', e => { if(e.key === 'Enter') $('checkBtn').click(); });
+  document.querySelectorAll('[data-demo]').forEach(btn => btn.addEventListener('click', () => {
+    const n = Number(btn.dataset.demo);
+    recordReading(n, 'Demo example');
+    $('connectionStatus').textContent = 'Demo reading shown — this is example data, not a live sensor value.';
+  }));
+  $('clearBtn').addEventListener('click', () => {
+    $('ntuInput').value = '';
+    $('ntuValue').textContent = '—';
+    $('levelPill').textContent = 'Waiting for reading'; $('levelPill').className = 'pill';
+    $('verdictIcon').textContent = '🔬'; $('verdict').textContent = 'Waiting for a reading';
+    $('explanation').textContent = 'Provide a turbidity reading to classify the sample and show a preferred treatment approach.';
+    $('solutionSteps').innerHTML = '<li>Enter a turbidity value or connect the Arduino.</li><li>AquaRescue will recommend a next step.</li>';
+  });
+
+  $('connectBtn').addEventListener('click', async () => {
+    if (!('serial' in navigator)) {
+      $('connectionStatus').textContent = 'Web Serial is unavailable in this browser. Use current Chrome or Edge on localhost or HTTPS.';
+      return;
+    }
+    try {
+      serialPort = await navigator.serial.requestPort();
+      await serialPort.open({ baudRate: 9600 });
+      keepReading = true;
+      $('robotStatus').textContent = 'Arduino connected'; $('robotStatus').classList.add('active');
+      $('connectionStatus').textContent = 'Arduino connected at 9600 baud. Waiting for turbidity data…';
+      const reader = serialPort.readable.getReader();
+      const decoder = new TextDecoder();
+      let buffer = '';
+      while (keepReading) {
+        const {value, done} = await reader.read();
+        if (done) break;
+        buffer += decoder.decode(value, {stream:true});
+        const lines = buffer.split(/\r?\n/); buffer = lines.pop() || '';
+        for (const line of lines) {
+          const s = line.trim(); if (!s) continue;
+          let n;
+          try { const obj = JSON.parse(s); n = Number(obj.turbidity); }
+          catch { n = Number(s); }
+          if (Number.isFinite(n) && n >= 0) {
+            recordReading(n, 'Arduino');
+            $('connectionStatus').textContent = 'Arduino connected — latest sensor reading received.';
+          }
+        }
+      }
+      reader.releaseLock();
+    } catch (err) {
+      $('connectionStatus').textContent = 'Connection not completed. Check the cable, selected port, and browser permissions.';
+      console.error(err);
+    }
+  });
+})();
+</script>
+</body>
+</html>
